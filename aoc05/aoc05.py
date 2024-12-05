@@ -1,69 +1,44 @@
-def partone():
-    f = open("file.txt", "r").readlines()
+def partone(f, ff):
     rules = {}
     for e in f:
-        tmp = [int(i) for i in e.strip().split("|")]
-        if tmp[0] in rules:
-            rules[tmp[0]].append(tmp[1])
-        else:
-            rules[tmp[0]] = [tmp[1]]
+        key, value = map(int, e.strip().split("|"))
+        rules.setdefault(key, []).append(value)
 
-    f = open("file01.txt", "r").readlines()
     s = 0
-    for e in f:
-        correct = True
-        tmp = [int(i) for i in e.replace("\n", "").split(",")]
-        for i in range(len(tmp)):
-            if tmp[i] in rules.keys():
-                for j in rules[tmp[i]]:
-                    if j in tmp[:i]:
-                        correct = False
-                        break
-
-        if correct is True:
-            s += tmp[int(len(tmp) / 2)]
-        print(s)
+    for e in ff:
+        tmp = list(map(int, e.strip().split(",")))
+        for i, value in enumerate(tmp):
+            if value in rules and any(j in tmp[:i] for j in rules[value]):
+                break
+        else:
+            s += tmp[len(tmp) // 2]
+    print(s)
 
 
-def parttwo():
-    print("______________________________________________")
-    f = open("file.txt", "r").readlines()
+def parttwo(f, ff):
     rules = {}
     for e in f:
-        tmp = [int(i) for i in e.strip().split("|")]
-        if tmp[0] in rules:
-            rules[tmp[0]].append(tmp[1])
-            rules[tmp[0]] = sorted(rules[tmp[0]], reverse=True)
+        key, value = map(int, e.strip().split("|"))
+        rules.setdefault(key, []).append(value)
 
-        else:
-            rules[tmp[0]] = [tmp[1]]
-
-    f = open("file01.txt", "r").readlines()
     s = 0
-    for e in f:
+    for e in ff:
         correct = True
-        tmp = [int(i) for i in e.replace("\n", "").split(",")]
+        tmp = list(map(int, e.strip().split(",")))
         i = 0
-        while i != len(tmp):
-            if tmp[i] in rules.keys():
-                for j in rules[tmp[i]]:
-                    if j in tmp[:i]:
-                        correct = False
-                        print(tmp)
-                        tmp[tmp.index(j)] = tmp[i]
-                        tmp[i] = j
-                        i = 0
-                        print(
-                            tmp,
-                            "haha",
-                        )
+        while i < len(tmp):
+            for j in rules[tmp[i]]:
+                if j in tmp[:i]:
+                    correct = False
+                    tmp[tmp.index(j)], tmp[i] = tmp[i], j
+                    i = 0
             i += 1
-
-        if correct is False:
-            s += tmp[int(len(tmp) / 2)]
-        print(s)
+        s += tmp[len(tmp) // 2] if not correct else 0
+    print(s)
 
 
 if __name__ == "__main__":
-    # partone()
-    parttwo()
+    f = open("file.txt", "r").readlines()
+    ff = open("file01.txt", "r").readlines()
+    partone(f, ff)
+    parttwo(f, ff)
